@@ -1,2 +1,2 @@
 "node_modules/" 
-"DataPreprocessing/inputs/cleaned_courses.pkl"
+"DataPreprocessing/inputs/*.pkl"
