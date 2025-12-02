@@ -6,6 +6,7 @@ import seaborn as sns
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib import animation
+import re
 
 from PIL import Image
 from matplotlib.patches import Patch, Circle
@@ -64,6 +65,14 @@ states = adjust_maps(states)
 
 counties['county_id'] = counties['STATEFP'] + counties['COUNTYFP'] # Use this to match with IPEDS data
 
+def matching(keyword, string):
+    pattern = rf"(?<!\w){keyword}(?!\w)"
+    # Explicitly convert the result to a boolean
+    is_match = bool(re.search(pattern.lower(), string.lower()))
+    return is_match
+
+
+
 # Objects 
 
 class KeyWordSearch:
@@ -72,7 +81,7 @@ class KeyWordSearch:
 
         ghost = df.copy()
 
-        ghost[f'is_{self.word}'] = ghost['full_description'].apply(lambda x: self.word in x)
+        ghost[f'is_{self.word}'] = ghost['full_description'].apply(lambda x: matching(self.word, x))
 
         self.df = ghost[ghost[f'is_{self.word}']].sort_values(by='start_yr', ascending=True)
 
@@ -200,7 +209,7 @@ class KeyWordListSearch:
 
         for keyword in self.keywords:
 
-            ghost_df[f'is_{keyword}'] = ghost_df['full_description'].apply(lambda x: keyword in x) # Works for all keywords
+            ghost_df[f'is_{keyword}'] = ghost_df['full_description'].apply(lambda x: matching(keyword, x)) # Works for all keywords
             
             ghost_df['any_keyword_present'] = ghost_df['any_keyword_present'] | ghost_df[f'is_{keyword}'] # This will stay positive if any keyword is present
 
