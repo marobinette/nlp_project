@@ -481,7 +481,7 @@ class KeyWordListSearchAgent:
 
         pass
     
-    def time_series(self, percentage=True, IPEDS='', show=True, category=''):
+    def time_series(self, percentage=True, IPEDS='', show=True, show_by_type=True, category='', separate=True):
         time_df = self.df.copy()
         years = list(self.df['start_yr'].value_counts().keys())
         years.sort()
@@ -490,6 +490,7 @@ class KeyWordListSearchAgent:
         ugs = []
         grs = []
         boths = []
+        alls = []
 
         if IPEDS != '': # If ID is specified, then filter for it 
             time_df = time_df[time_df['ipeds_id']==IPEDS]
@@ -504,6 +505,7 @@ class KeyWordListSearchAgent:
                 total_grad = self.courses_df[self.courses_df['start_yr'] == year]['is_gr'].sum()
                 total_ug = self.courses_df[self.courses_df['start_yr'] == year]['is_ug'].sum()
                 total_both = self.courses_df[self.courses_df['start_yr'] == year]['is_both'].sum()
+                total_all = total_grad + total_both + total_ug # Full total of courses
 
 
                 count = len(keyword_ghost_df)
@@ -514,6 +516,8 @@ class KeyWordListSearchAgent:
                 grs.append(gr_num)
                 both_num = keyword_ghost_df['is_both'].sum() / total_both if total_both > 0 else 0
                 boths.append(both_num)
+                alls.append(count/total_all) # Number of keyword courses divided by total courses
+                
 
         elif percentage==False:
             metric = 'Counts'
@@ -527,22 +531,35 @@ class KeyWordListSearchAgent:
                 grs.append(gr_num)
                 both_num = keyword_ghost_df['is_both'].sum()
                 boths.append(both_num)
+                total_all = ug_num + gr_num + both_num # Full total of courses
+                alls.append(total_all) # Number of keyword courses divided by total courses
 
-        if show==True: # Plot only if user wants
+        if show == True:
+            if show_by_type==True: # Plot only if user wants
+                
+                #plt.plot(years, counts, label=f'Total"')
+                plt.plot(years, ugs, label='Undergrad')
+                plt.plot(years, grs, label='Grad')
+                plt.plot(years, boths, label='Both')
             
-            #plt.plot(years, counts, label=f'Total"')
-            plt.plot(years, ugs, label='Undergrad')
-            plt.plot(years, grs, label='Grad')
-            plt.plot(years, boths, label='Both')
-        
-            plt.xlabel('Year')
-            plt.ylabel(f'{metric} of Courses')
-            plt.title(f'{metric} of {category} Courses Over Time' + str(IPEDS))
+                plt.xlabel('Year')
+                plt.ylabel(f'{metric} of Courses')
+                plt.title(f'{metric} of {category} Courses Over Time' + str(IPEDS))
 
-            plt.legend()
-            plt.show()
+                plt.legend()
+                plt.show()
 
-        return {'Years':years, 'ug':ugs, 'gr':grs, 'both':boths}
+            elif show_by_type==False:
+                plt.plot(years, alls, label=f'Total')
+                plt.xlabel('Year')
+                plt.ylabel(f'{metric} of Courses')
+                plt.title(f'{metric} of {category} Courses Over Time' + str(IPEDS))
+
+                plt.legend()
+                plt.show()
+
+
+        return {'Years':years, 'ug':ugs, 'gr':grs, 'both':boths, 'total_percent':alls}
 
     def merge_to_ipeds(self):
         self.df['ipeds_id'] = self.df['ipeds_id'].astype(int)
