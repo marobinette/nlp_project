@@ -497,7 +497,7 @@ class KeyWordListSearchAgent:
             
 
         if percentage == True:
-            metric = 'Percentage'
+            metric = 'Proportion'
 
             for year in years:
                 keyword_ghost_df = time_df[time_df['start_yr'] == year]
@@ -550,7 +550,7 @@ class KeyWordListSearchAgent:
                 plt.show()
 
             elif show_by_type==False:
-                plt.plot(years, alls, label=f'Total')
+                plt.plot(years, alls, c='tab:blue', label=f'Total')
                 plt.xlabel('Year')
                 plt.ylabel(f'{metric} of Courses')
                 plt.title(f'{metric} of {category} Courses Over Time' + str(IPEDS))
