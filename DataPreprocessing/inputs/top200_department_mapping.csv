@@ -1,0 +1,201 @@
+Department;DepartmentCleaned;Department_corrected;Department_corrected different from DepartmentCleaned
+GOVT;government;government;0
+EDSP;education;education;0
+HIST;history;history;0
+GVPT;gvpt;government;1
+ECON;economics;economics;0
+GEOG;geography;geography;0
+Biology;biology;biology;0
+Journalism;journalism;journalism;0
+BSCI;bsci;biological sciences;1
+Psychology;psychology;psychology;0
+Sociology;sociology;sociology;0
+Communication;communications;communications;0
+ENEE;enee;electrical and computer engineering;1
+Women's Studies;women's studies;women's studies;0
+History;history;history;0
+ANSC;animal science;animal science;0
+DANC;dance;dance;0
+CHIN;chinese;chinese;0
+ARCH;architecture;architecture;0
+Business;business;business;0
+Economics;economics;economics;0
+CLAS;classics;classics;0
+CHEM;chemistry;chemistry;0
+ARTH;art history;art history;0
+EDUC;education;education;0
+ANTH;anthropology;anthropology;0
+SOCY;sociology;sociology;0
+GEOL;geology;geology;0
+PHYS;physics;physics;0
+MATH;mathematics;mathematics;0
+BMGT;business;business;0
+PSYC;psychology;psychology;0
+COMM;communications;communications;0
+Math;mathematics;mathematics;0
+STAT;statistics;statistics;0
+Chemistry;chemistry;chemistry;0
+Physics;physics;physics;0
+Kinesiology;kinesiology;kinesiology;0
+ENGL;english;english;0
+THET;thet;theatre;1
+PHIL;philosophy;philosophy;0
+WMST;wmst;women's studies;1
+FREN;french;french;0
+EDCI;education;education;0
+LING;linguistics;linguistics;0
+JOUR;journalism;journalism;0
+Business Administration;business;business;0
+Electrical Engineering;electrical engineering;electrical engineering;0
+Mathematics;mathematics;mathematics;0
+Engineering;engineering;engineering;0
+EE;electrical engineering;electrical engineering;0
+ASTR;astronomy;astronomy;0
+Anthropology;anthropology;anthropology;0
+ENCE;ence;ence;0
+ITAL;italian;italian;0
+GERM;german;german;0
+RUSS;russian;russian;0
+ENME;enme;enme;0
+MUSC;music;music;0
+Geography;geography;geography;0
+Geology;geology;geology;0
+Computer Science;computer science;computer science;0
+SPAN;spanish;spanish;0
+HLTH;hlth;health;1
+Spanish;spanish;spanish;0
+Biochemistry;biochemistry;biochemistry;0
+Astronomy;astronomy;astronomy;0
+MUS;music;music;0
+DNCE;dnce;dance;1
+ECONOMICS;economics;economics;0
+Microbiology;biology;biology;0
+ANTHROPOLOGY;anthropology;anthropology;0
+HORT;hort;horticulture;1
+PHED;phed;physical education department;1
+Zoology;zoology;zoology;0
+MECHANICAL ENGINEERING;mechanical engineering;mechanical engineering;0
+Civil Engineering;civil engineering;civil engineering;0
+ART;art;art;0
+PHILOSOPHY;philosophy;philosophy;0
+CHEMISTRY;chemistry;chemistry;0
+MUSIC;music;music;0
+GEOGRAPHY;geography;geography;0
+HISTORY;history;history;0
+Entomology;entomology;entomology;0
+Botany;biology;biology;0
+ME;mechanical engineering;mechanical engineering;0
+EDSE;edse;edse;0
+CS;computer science;computer science;0
+BSAD;business;business;0
+ED;education;education;0
+ENG;english;english;0
+Education;education;education;0
+EDUCATION;education;education;0
+Soc;sociology;sociology;0
+Comparative Literature;comparative literature;comparative literature;0
+Music;music;music;0
+Art;art;art;0
+E;e;e;0
+PSYCHOLOGY;psychology;psychology;0
+Chinese;chinese;chinese;0
+Chem;chemistry;chemistry;0
+English;english;english;0
+Political Science;political science;political science;0
+GEOLOGY;geology;geology;0
+ENGLISH;english;english;0
+Stat;statistics;statistics;0
+Statistics;statistics;statistics;0
+Classics;classics;classics;0
+Mechanical Engineering;mechanical engineering;mechanical engineering;0
+Pharmacy;pharmacy;pharmacy;0
+BIOL;biology;biology;0
+German;german;german;0
+Theatre;theater;theater;0
+Italian;italian;italian;0
+Russian;russian;russian;0
+Physiology;physiology;physiology;0
+Management;business;business;0
+Speech;speech;speech;0
+Ed;education;education;0
+Econ;economics;economics;0
+Nursing;nursing;nursing;0
+Agricultural Economics;agricultural economics;agricultural economics;0
+Philosophy;philosophy;philosophy;0
+Home Economics;home economics;home economics;0
+French;french;french;0
+Portuguese;portuguese;portuguese;0
+ARTS;art;art;0
+Horticulture;horticulture;horticulture;0
+FRENCH;french;french;0
+Linguistics;linguistics;linguistics;0
+Chemical Engineering;chemical engineering;chemical engineering;0
+CJ;cj;criminal justice;1
+ECEN;ecen;electrical and computer engineering;1
+GERMAN;german;german;0
+Public Health;public health;public health;0
+Finance;finance;finance;0
+Latin;latin;latin;0
+PHYSICS;physics;physics;0
+Dance;dance;dance;0
+ECE;electrical engineering;electrical engineering;0
+Physical Education;physical education;physical education;0
+Accounting;accounting;accounting;0
+POLITICAL SCIENCE;political science;political science;0
+CLASSICS;classics;classics;0
+CE;civil engineering;civil engineering;0
+SOC;sociology;sociology;0
+SOCI;sociology;sociology;0
+Architecture;architecture;architecture;0
+KIN;kinesiology;kinesiology;0
+HY;history;history;0
+NUR;nursing;nursing;0
+REL;religion;religion;0
+Japanese;japanese;japanese;0
+;;0;0
+PH;physics;physics;0
+Public Policy;public policy;public policy;0
+Religious Studies;religious studies;religious studies;0
+Law;law;law;0
+Social Work;social work;social work;0
+LAW;law;law;0
+THR;theater;theater;0
+PE;physical education;physical education;0
+BME;biomedical engineering;biomedical engineering;0
+Arts and Sciences;arts and sciences;arts and sciences;0
+LAWS;laws;laws;0
+Art History;art history;art history;0
+Biol;biology;biology;0
+Biological Sciences;biology;biology;0
+HDFS;human development;human development;0
+C;other;other;0
+NURS;nursing;nursing;0
+Hist;history;history;0
+Optometry;optometry;optometry;0
+PSCI;psci;psci;0
+ARTS AND SCIENCES;arts and sciences;arts and sciences;0
+BIOLOGY;biology;biology;0
+MGMT;business;business;0
+PSY;psychology;psychology;0
+POLS;political science;political science;0
+G;g;g;0
+Religion;religion;religion;0
+Theater;theater;theater;0
+ACCT;accounting;accounting;0
+CI;ci;curriculum and instruction;1
+CSD;csd;communication sciences and disorders;1
+Theater Arts;theater;theater;0
+CVEN;civil engineering;civil engineering;0
+MUSI;music;music;0
+Social Welfare;social welfare;social welfare;0
+City and Regional Planning;city and regional planning;city and regional planning;0
+Dentistry;dentistry;dentistry;0
+Materials Science and Engineering;materials science and engineering;materials science and engineering;0
+Slavic Languages and Literatures;slavic languages and literatures;slavic languages and literatures;0
+Spanish and Portuguese;spanish;spanish;0
+M;other;other;0
+GRAD;grad;grad;0
+DRAM;drama;drama;0
+RELI;religion;religion;0
+Asian Languages and Cultures;asian studies;asian studies;0
+CSCI;csci;computer science;1

@@ -1,2 +1,8 @@
+# Dependencies
 node_modules/
+
+# Ignore all pickle files in these areas
 DataPreprocessing/inputs/*.pkl
+DataPreprocessing/outputs/**/*.pkl
+RemoveDuplicates/outputs/*.pkl
+data/*.pkl
