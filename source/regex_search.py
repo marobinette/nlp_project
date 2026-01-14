@@ -17,7 +17,7 @@ matplotlib.rcParams['animation.embed_limit'] = 25 * 1024 * 1024
 
 # Pickle file
 
-df = pd.read_pickle('data/cleaned_courses.pkl') 
+df = pd.read_pickle('../data/cleaned_courses.pkl') 
 
 df['is_ug'] = df['cat_type'] == 'ug'
 df['is_gr'] = df['cat_type'] == 'gr'
@@ -27,16 +27,16 @@ df['full_description'] = df['Title'] + ' ' + df['Description']
 df['full_description'] = df['full_description'].apply(lambda x: x.lower())
 
 # IPEDS 
-ipeds_df = pd.read_csv('data/ipeds_lookup.csv')
+ipeds_df = pd.read_csv('../data/ipeds_lookup.csv')
 
 ipeds_df = ipeds_df[['UNITID','INSTNM','ADDR','CITY','STABBR','ZIP', 'COUNTYCD','COUNTYNM', 'LONGITUD','LATITUDE']] # Remove unnecessary columns
 
 # GEO data
-counties = gpd.read_file("data/cb_2018_us_county_500k/")
+counties = gpd.read_file("../data/cb_2018_us_county_500k/")
 counties = counties[~counties.STATEFP.isin(["72", "69", "60", "66", "78"])]
 counties = counties.set_index("GEOID")
 
-states = gpd.read_file("data/cb_2018_us_state_500k/")
+states = gpd.read_file("../data/cb_2018_us_state_500k/")
 states = states[~states.STATEFP.isin(["72", "69", "60", "66", "78"])]
 
 counties = counties.to_crs("ESRI:102003")
@@ -329,3 +329,283 @@ class KeyWordListSearch:
 
 ### UCLA, UVM, UND ###
 
+# ...existing code...
+class KeyWordSearchAgent:
+    def __init__(self, word, courses_df = df):
+        # store the dataframe provided at init (defaults to module-level df)
+        self.courses_df = courses_df
+        self.word = word.lower()
+
+        ghost = self.courses_df.copy()
+
+        ghost[f'is_{self.word}'] = ghost['full_description'].apply(lambda x: matching(self.word, x))
+
+        self.df = ghost[ghost[f'is_{self.word}']].sort_values(by='start_yr', ascending=True)
+
+        pass
+    
+    def time_series(self, percentage=True, IPEDS='', show=True):
+        time_df = self.df.copy()
+        years = list(self.df['start_yr'].value_counts().keys())
+        years.sort()
+
+        counts = []
+        ugs = []
+        grs = []
+        boths = []
+
+        if IPEDS != '': # If ID is specified, then filter for it 
+            time_df = time_df[time_df['ipeds_id']==IPEDS]
+            
+
+        if percentage == True:
+            metric = 'Percentage'
+
+            for year in years:
+                keyword_ghost_df = time_df[time_df['start_yr'] == year]
+                # use the dataframe that was passed to __init__ when computing totals
+                total_grad = self.courses_df[self.courses_df['start_yr'] == year]['is_gr'].sum()
+                total_ug = self.courses_df[self.courses_df['start_yr'] == year]['is_ug'].sum()
+                total_both = self.courses_df[self.courses_df['start_yr'] == year]['is_both'].sum()
+
+
+                count = len(keyword_ghost_df)
+                counts.append(count)
+                ug_num = keyword_ghost_df['is_ug'].sum() / total_ug if total_ug > 0 else 0
+                ugs.append(ug_num)
+                gr_num = keyword_ghost_df['is_gr'].sum() / total_grad if total_grad > 0 else 0
+                grs.append(gr_num)
+                both_num = keyword_ghost_df['is_both'].sum() / total_both if total_both > 0 else 0
+                boths.append(both_num)
+
+        elif percentage==False:
+            metric = 'Counts'
+            for year in years:
+                keyword_ghost_df = time_df[time_df['start_yr'] == year]
+                count = len(keyword_ghost_df)
+                counts.append(count)
+                ug_num = keyword_ghost_df['is_ug'].sum() 
+                ugs.append(ug_num)
+                gr_num = keyword_ghost_df['is_gr'].sum() 
+                grs.append(gr_num)
+                both_num = keyword_ghost_df['is_both'].sum()
+                boths.append(both_num)
+
+        if show==True: # Plot only if user wants
+            
+            #plt.plot(years, counts, label=f'Total"')
+            plt.plot(years, ugs, label='Undergrad')
+            plt.plot(years, grs, label='Grad')
+            plt.plot(years, boths, label='Both')
+        
+            plt.xlabel('Year')
+            plt.ylabel(f'{metric} of Courses')
+            plt.title(f'{metric} of Courses Over Time with Keyword: "{self.word}"' + str(IPEDS))
+
+            plt.legend()
+            plt.show()
+
+        return {'Years':years, 'ug':ugs, 'gr':grs, 'both':boths}
+
+    def merge_to_ipeds(self):
+        self.df['ipeds_id'] = self.df['ipeds_id'].astype(int)
+        merged = pd.merge(self.df, ipeds_df, how='left',left_on='ipeds_id', right_on='UNITID')
+
+        self.merged = merged
+
+    def diffusion(self):
+        self.merge_to_ipeds()
+        # Build sorted year list and cumulative sets from self.merged
+        years_sorted = sorted(self.merged['start_yr'].dropna().unique())
+        cumulative_sets = []
+        cum_set = set()
+        for y in years_sorted:
+            ids = self.merged.loc[self.merged['start_yr'] == y, 'COUNTYCD'].dropna().astype(int).unique().tolist()
+            cum_set.update(ids)
+            cumulative_sets.append(set(cum_set.copy()))
+
+        # plotting params
+        edge_color = "#30011E"
+        background_color = "#fafafa"
+        default_color = "mistyrose"
+        highlight_color = "limegreen"
+
+        fig, ax = plt.subplots(figsize=(14, 9))
+        fig.patch.set_facecolor(background_color)
+        ax.set_axis_off()
+
+        def draw_frame(frame_idx):
+            ax.clear()
+            ax.set_axis_off()
+            current_set = cumulative_sets[frame_idx]
+            # compute color column for this frame
+            colors = counties['county_id'].astype(int).apply(lambda cid: highlight_color if cid in current_set else default_color)
+            counties.plot(ax=ax, color=colors, edgecolor=edge_color + "55")
+            states.plot(ax=ax, edgecolor=edge_color, color="None", linewidth=1)
+            ax.set_title(f"Cumulative counties with colleges up to {years_sorted[frame_idx]}", fontsize=16)
+            return ax
+
+        def update(frame_idx):
+            draw_frame(frame_idx)
+            return []
+
+        anim = animation.FuncAnimation(fig, update, frames=len(years_sorted), interval=200, blit=False, repeat=True)
+
+        return anim
+    
+### Number of courses instead of percentage ###
+
+### Run for all keywords in list ###
+
+class KeyWordListSearchAgent:
+    def __init__(self, keywords, courses_df = df):
+        self.keywords = [x.lower() for x in keywords]
+        # store the dataframe provided at init (defaults to module-level df)
+        self.courses_df = courses_df
+
+        ghost_df = self.courses_df.copy()
+
+        ghost_df['any_keyword_present'] = False
+
+        for keyword in self.keywords:
+
+            ghost_df[f'is_{keyword}'] = ghost_df['full_description'].apply(lambda x: matching(keyword, x)) # Works for all keywords
+            
+            ghost_df['any_keyword_present'] = ghost_df['any_keyword_present'] | ghost_df[f'is_{keyword}'] # This will stay positive if any keyword is present
+
+            self.full_df = ghost_df
+            
+            keyword_df = ghost_df[ghost_df['any_keyword_present'] == True]
+
+        self.df = keyword_df.sort_values(by='start_yr', ascending=True)
+
+        pass
+    
+    def time_series(self, percentage=True, IPEDS='', show=True, show_by_type=True, category='', separate=True):
+        time_df = self.df.copy()
+        years = list(self.df['start_yr'].value_counts().keys())
+        years.sort()
+
+        counts = []
+        ugs = []
+        grs = []
+        boths = []
+        alls = []
+
+        if IPEDS != '': # If ID is specified, then filter for it 
+            time_df = time_df[time_df['ipeds_id']==IPEDS]
+            
+
+        if percentage == True:
+            metric = 'Proportion'
+
+            for year in years:
+                keyword_ghost_df = time_df[time_df['start_yr'] == year]
+                # use the dataframe that was passed to __init__ when computing totals
+                total_grad = self.courses_df[self.courses_df['start_yr'] == year]['is_gr'].sum()
+                total_ug = self.courses_df[self.courses_df['start_yr'] == year]['is_ug'].sum()
+                total_both = self.courses_df[self.courses_df['start_yr'] == year]['is_both'].sum()
+                total_all = total_grad + total_both + total_ug # Full total of courses
+
+
+                count = len(keyword_ghost_df)
+                counts.append(count)
+                ug_num = keyword_ghost_df['is_ug'].sum() / total_ug if total_ug > 0 else 0
+                ugs.append(ug_num)
+                gr_num = keyword_ghost_df['is_gr'].sum() / total_grad if total_grad > 0 else 0
+                grs.append(gr_num)
+                both_num = keyword_ghost_df['is_both'].sum() / total_both if total_both > 0 else 0
+                boths.append(both_num)
+                alls.append(count/total_all) # Number of keyword courses divided by total courses
+                
+
+        elif percentage==False:
+            metric = 'Counts'
+            for year in years:
+                keyword_ghost_df = time_df[time_df['start_yr'] == year]
+                count = len(keyword_ghost_df)
+                counts.append(count)
+                ug_num = keyword_ghost_df['is_ug'].sum() 
+                ugs.append(ug_num)
+                gr_num = keyword_ghost_df['is_gr'].sum() 
+                grs.append(gr_num)
+                both_num = keyword_ghost_df['is_both'].sum()
+                boths.append(both_num)
+                total_all = ug_num + gr_num + both_num # Full total of courses
+                alls.append(total_all) # Number of keyword courses divided by total courses
+
+        if show == True:
+            if show_by_type==True: # Plot only if user wants
+                
+                #plt.plot(years, counts, label=f'Total"')
+                plt.plot(years, ugs, label='Undergrad')
+                plt.plot(years, grs, label='Grad')
+                plt.plot(years, boths, label='Both')
+            
+                plt.xlabel('Year')
+                plt.ylabel(f'{metric} of Courses')
+                plt.title(f'{metric} of {category} Courses Over Time' + str(IPEDS))
+
+                plt.legend()
+                plt.show()
+
+            elif show_by_type==False:
+                plt.plot(years, alls, c='tab:blue', label=f'Total')
+                plt.xlabel('Year')
+                plt.ylabel(f'{metric} of Courses')
+                plt.title(f'{metric} of {category} Courses Over Time' + str(IPEDS))
+
+                plt.legend()
+                plt.show()
+
+
+        return {'Years':years, 'ug':ugs, 'gr':grs, 'both':boths, 'total_percent':alls}
+
+    def merge_to_ipeds(self):
+        self.df['ipeds_id'] = self.df['ipeds_id'].astype(int)
+        merged = pd.merge(self.df, ipeds_df, how='left',left_on='ipeds_id', right_on='UNITID')
+
+        self.merged = merged
+
+    def diffusion(self):
+        self.merge_to_ipeds()
+        # Build sorted year list and cumulative sets from self.merged
+        years_sorted = sorted(self.merged['start_yr'].dropna().unique())
+        cumulative_sets = []
+        cum_set = set()
+        for y in years_sorted:
+            ids = self.merged.loc[self.merged['start_yr'] == y, 'COUNTYCD'].dropna().astype(int).unique().tolist()
+            cum_set.update(ids)
+            cumulative_sets.append(set(cum_set.copy()))
+
+        # plotting params
+        edge_color = "#30011E"
+        background_color = "#fafafa"
+        default_color = "mistyrose"
+        highlight_color = "limegreen"
+
+        fig, ax = plt.subplots(figsize=(14, 9))
+        fig.patch.set_facecolor(background_color)
+        ax.set_axis_off()
+
+        def draw_frame(frame_idx):
+            ax.clear()
+            ax.set_axis_off()
+            current_set = cumulative_sets[frame_idx]
+            # compute color column for this frame
+            colors = counties['county_id'].astype(int).apply(lambda cid: highlight_color if cid in current_set else default_color)
+            counties.plot(ax=ax, color=colors, edgecolor=edge_color + "55")
+            states.plot(ax=ax, edgecolor=edge_color, color="None", linewidth=1)
+            ax.set_title(f"Cumulative counties with colleges up to {years_sorted[frame_idx]}", fontsize=16)
+            return ax
+
+        def update(frame_idx):
+            draw_frame(frame_idx)
+            return []
+
+        anim = animation.FuncAnimation(fig, update, frames=len(years_sorted), interval=200, blit=False, repeat=True)
+
+        return anim
+# ...existing code...
+# filepath: /Users/jjelliot/Desktop/NLP/nlp_project/source/regex_search.py
+# ...existing
