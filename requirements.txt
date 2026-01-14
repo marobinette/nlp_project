@@ -1,0 +1,12 @@
+jupyter
+numpy
+pandas
+matplotlib
+seaborn
+openpyxl
+python-docx
+flask
+flask_cors
+waitress
+label-studio
+scipy
